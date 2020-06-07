@@ -1,7 +1,8 @@
 import React, {Fragment, useContext} from 'react';
 import Tarea from './Tarea';
 import proyectoContext from '../../context/proyectos/proyectoContext';
-
+import tareaContext from '../../context/tareas/tareaContext';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 const ListadoTareas = () => {
 
@@ -10,6 +11,10 @@ const ListadoTareas = () => {
     const proyectosContext = useContext(proyectoContext);
     const { proyecto, eliminarProyectoFn } = proyectosContext;
 
+    //obtener las tareas del proyectos
+    const tareasContext = useContext(tareaContext);
+    const { tareasproyecto } = tareasContext;
+
     // SI no hay proyecto seleccionado
 
     if(!proyecto)return <h2>Selecciona un proyecto</h2>
@@ -17,13 +22,7 @@ const ListadoTareas = () => {
 
     const [proyectoActual] = proyecto;
 
-    const tareasProyectos =[
-        {nombre: 'Elegir plataforma', estado:true},
-        {nombre: 'Elegir plataforma', estado:false},
-        {nombre: 'Elegir plataforma', estado:false},
-        {nombre: 'Elegir plataforma', estado:true},
-
-    ]
+    
 
     //Eliminar el proyecto
 
@@ -37,13 +36,21 @@ const ListadoTareas = () => {
             <h2>Proyecto: {proyectoActual.nombre}</h2>
 
             <ul className="listado-tareas">
-                {tareasProyectos.length === 0
+                {tareasproyecto.length === 0
                     ? (<li className="tarea"><p>No hay tareas</p></li>)
-                    : tareasProyectos.map(tarea => (
-                        <Tarea
-                            tarea={tarea}
-                        />
-                    ))
+                    : <TransitionGroup>
+                       { tareasproyecto.map(tarea => (
+                           <CSSTransition
+                            key={tarea.id}
+                            timeout={200}
+                            classNames="tarea"
+                           >
+                            <Tarea
+                                tarea={tarea}
+                            />
+                           </CSSTransition>
+                    ))}
+                    </TransitionGroup>
                 
                 
                 }
@@ -53,7 +60,8 @@ const ListadoTareas = () => {
                 type="button"
                 className="btn btn-eliminar"
                 onClick={onClickEliminar}
-            >Eliminar Proyecto &times;</button>
+            >Eliminar Proyecto &times;
+            </button>
 
 
             
